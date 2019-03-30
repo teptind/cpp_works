@@ -19,12 +19,7 @@ _start:
 
                 jmp             exit
 
-; adds two long numbers
-;    rdi -- address of summand #1 (long number)
-;    rsi -- address of summand #2 (long number)
-;    rcx -- length of long numbers in qwords
-; result:
-;    sum is written to rdi
+
 sub_long_long:
                 push            rdi
                 push            rsi
