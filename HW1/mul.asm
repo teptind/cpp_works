@@ -10,10 +10,10 @@ _start:
                 lea             rdi, [rsp + SZ * 8]
                 mov             rcx, SZ
                 call            read_long
-                
+
 		mov             rdi, rsp
                 call            read_long
-		
+
                 lea             rsi, [rsp + SZ * 8]
                 lea		r8, [rsp + 2 * SZ * 8]
                 call            mul_long_long
@@ -38,9 +38,11 @@ mul_long_long:
 		push		r8
 
                 mov		r9, SZ
+                xor             rbx, rbx
                 clc
 .loop:
 		mov		r11, [rsi]
+
                 call		add_curr_to_ans;
                 lea             rsi, [rsi + 8]
                 lea             r8, [r8 + 8]
@@ -63,23 +65,21 @@ add_curr_to_ans:
                 push            rax
                 push            rcx
                 push            rdi
-		push		r8
-
-                xor             rbx, rbx 
+        		push		    r8
 .loop:
                 mov             rax, [rdi]
                 mul             r11
                 add             rax, rbx
                 adc             rdx, 0
-                add             [r8], rax
-		adc		rdx, 0
-		lea             rdi, [rdi + 8]
-		lea             r8, [r8 + 8]
+                adc             [r8], rax
+        		adc		        rdx, 0
+        		lea             rdi, [rdi + 8]
+        		lea             r8, [r8 + 8]
                 mov             rbx, rdx
                 dec             rcx
                 jnz             .loop
 
-		pop		r8
+		        pop		        r8
                 pop             rdi
                 pop             rcx
                 pop             rax
