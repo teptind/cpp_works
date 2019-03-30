@@ -10,14 +10,16 @@ _start:
                 lea             rdi, [rsp + SZ * 8]
                 mov             rcx, SZ
                 call            read_long
-                mov             rdi, rsp
+                
+		mov             rdi, rsp
                 call            read_long
+		
                 lea             rsi, [rsp + SZ * 8]
-                lea		        r8, [rsp + 2 * SZ * 8]
+                lea		r8, [rsp + 2 * SZ * 8]
                 call            mul_long_long
 
-				mov		        rdi, r8
-				mov		        rcx, SZ * 2
+		mov		rdi, r8
+		mov		rcx, SZ * 2
                 call            write_long
                 call            write_char
 
@@ -33,19 +35,19 @@ _start:
 
 mul_long_long:
                 push            rsi
-				push		    r8
+		push		r8
 
-                mov		        r9, SZ
+                mov		r9, SZ
                 clc
 .loop:
-				mov		        r11, [rsi]
-                call		    add_curr_to_ans;
+		mov		r11, [rsi]
+                call		add_curr_to_ans;
                 lea             rsi, [rsi + 8]
                 lea             r8, [r8 + 8]
                 dec             r9
                 jnz             .loop
 
-				pop		        r8
+		pop		r8
                 pop             rsi
                 ret
 
@@ -61,7 +63,7 @@ add_curr_to_ans:
                 push            rax
                 push            rcx
                 push            rdi
-				push		    r8
+		push		r8
 
                 xor             rbx, rbx 
 .loop:
@@ -70,14 +72,14 @@ add_curr_to_ans:
                 add             rax, rbx
                 adc             rdx, 0
                 add             [r8], rax
-				adc			    rdx, 0
-				lea             rdi, [rdi + 8]
-		        lea             r8, [r8 + 8]
+		adc		rdx, 0
+		lea             rdi, [rdi + 8]
+		lea             r8, [r8 + 8]
                 mov             rbx, rdx
                 dec             rcx
                 jnz             .loop
 
-				pop		        r8
+		pop		r8
                 pop             rdi
                 pop             rcx
                 pop             rax
