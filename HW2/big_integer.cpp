@@ -179,7 +179,8 @@ big_integer operator-(const big_integer &a, const big_integer &b) {
     int carry = 0;
     std::vector<uint32_t> res = a.value;
     uint64_t sub = 0;
-    for (size_t i = 0; i < a.size(); i++) {
+    size_t asz = a.size();
+    for (size_t i = 0; i < asz; i++) {
         sub = (uint64_t)(b[i]) + carry;
         carry = (sub > res[i]);
         res[i] = carry ? (uint32_t)((sub - res[i] - 1) ^ MX32) : res[i] - (uint32_t)sub;
@@ -196,10 +197,11 @@ big_integer &big_integer::operator*=(const big_integer &a) {
 
 big_integer operator*(const big_integer &a, const big_integer &b) {
     std::vector<uint32_t> x(a.size() + b.size() + 1, 0);
-    for (size_t i = 0; i < a.size(); i++) {
+    size_t asz = a.size(), bsz = b.size();
+    for (size_t i = 0; i < asz; i++) {
         uint32_t carry = 0;
         uint64_t cur;
-        for (size_t j = 0; j < b.size() || carry; ++j) {
+        for (size_t j = 0; j < bsz || carry; ++j) {
             cur = (uint64_t) (a[i]) * b[j] + x[i + j] + carry;
             x[i + j] = (uint32_t) (cur & MX32);
             carry = (uint32_t) (cur >> (32)); //in bits
@@ -306,7 +308,8 @@ big_integer operator<<(big_integer a, int d) {
     big_integer a_bit = a.to_bit();
     size_t newsz = a.size() + delta + 1;
     std::vector<uint32_t> x(newsz, 0);
-    for (size_t i = 0; i < a.size(); ++i) {
+    size_t asz = a.size();
+    for (size_t i = 0; i < asz; ++i) {
         if (move) {
             uint32_t rest = a_bit.bit_digit(i) >> (block_size - move);
             x[i + delta + 1] += rest;
@@ -332,7 +335,8 @@ big_integer operator>>(big_integer a, int d) {
     size_t move = d % block_size;
     big_integer a_bit = a.to_bit();
     std::vector<uint32_t> x(a.size() - delta, 0);
-    for (size_t i = 0; i < x.size(); ++i) {
+    size_t xsz = x.size();
+    for (size_t i = 0; i < xsz; ++i) {
         if (move) {
             uint32_t rest = a_bit.bit_digit(i + delta + 1) << (block_size - move);
             x[i] += rest;
