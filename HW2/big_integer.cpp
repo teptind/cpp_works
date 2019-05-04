@@ -78,7 +78,7 @@ int big_integer::compare_abs(const big_integer &a) const {
     if (size() != a.size()) {
         return (size() > a.size() ? 1 : -1);
     }
-    for (int i = (int) (size() - 1); i >= 0; --i) {
+    for (size_t i = size(); i-- > 0;) {
         if (value[i] != a[i]) {
             return (value[i] > a[i] ? 1 : -1);
         }
@@ -352,7 +352,7 @@ big_integer big_integer::short_divide(uint32_t a) const {
     uint32_t cur_digit = 0;
     std::vector<uint32_t> x;
     size_t block_size = 32;
-    for (int i = (int)size() - 1; i > -1; --i) {
+    for (size_t i = size(); i-- > 0;) {
         cur = (rest << block_size) + value[i];
         cur_digit = (uint32_t)(cur / a);
         x.push_back(cur_digit);
@@ -392,7 +392,7 @@ big_integer long_divide(const big_integer &a, const big_integer &b) {
             A -= Bm;
         }
         big_integer Bn_1(1, {B[n - 1]});
-        for (int i = (int) (m - 1); i > -1; --i) {
+        for (size_t i = m; i-- > 0;) {
             Bm >>= block_size;
             big_integer q(1, {A[n + i - 1], A[n + i]});
             q /= Bn_1;
