@@ -9,7 +9,7 @@
 #include <cstring>
 #include "shared_ptr.h"
 #include <vector>
-#include <iostream>
+// #include <iostream>
 
 template<typename T>
 class SharedVector {
@@ -76,7 +76,7 @@ public:
 
     SharedVector &operator=(const SharedVector<T> &x) {
         if (x.big_object.get()) {
-            if (big_object.get() == nullptr) {
+            if (capacity == 0) {
                 clear_small_object();
             }
             big_object = x.big_object;
@@ -130,30 +130,26 @@ public:
         } else {
             if (capacity == size_) {
                 capacity *= 2;
-                //std::cout << "copy from expand" << "\n";
                 make_copy();
             } else if (big_object.not_unique()) {
-                //std::cout << "copy on write (not unique)" << "\n";
                 make_copy();
-
             }
-            new(big_object.get() + size_) T(val);
+            T* ptr = big_object.get();
+            new(ptr + size_) T(val);
         }
         ++size_;
     }
 
     void pop_back() {
         if (big_object.not_unique()) {
-            //std::cout << "copy from pop_back" << "\n";
             make_copy();
         }
         --size_;
     }
 
     T &operator[](size_t i) {
-        if (big_object.get()) {
+        if (capacity > 0) {
             if (big_object.not_unique()) {
-                //std::cout << "copy from []" << "\n";
                 make_copy();
             }
             return big_object[i];
@@ -163,8 +159,9 @@ public:
     }
 
     const T &operator[](size_t i) const {
-        return (big_object.get()) ? big_object.get()[i] : small_object[i];
+        return (capacity > 0) ? big_object[i] : small_object[i];
     }
+
 };
 
 #endif //BIGINT_SHARED_VECTOR_H
