@@ -26,6 +26,7 @@ void check_random(size_t sz) {
     encoding("../tests/examples/random_file", "../tests/examples/buffer_encoded");
     decoding("../tests/examples/buffer_encoded", "../tests/examples/buffer_decoded");
     ASSERT_TRUE(same_files("../tests/examples/buffer_decoded", "../tests/examples/random_file"));
+    file_clear("../tests/examples/random_file");
 }
 TEST(correctness, small_random) {
     check_random(1000);

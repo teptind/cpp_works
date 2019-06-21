@@ -141,4 +141,16 @@ void make_random(std::string const &file_name, size_t cnt) {
     out.write(s.data(), s.size());
     out.close();
 }
+void file_clear(std::string const &file_name) {
+    std::ofstream out;
+    out.open(file_name, std::ios::out);
+    if (!out.is_open()) {
+        out.close();
+        std::cout << "unable to open file " << file_name << " to write\n";
+        return;
+    }
+    std::string s;
+    out.write(s.data(), s.size());
+    out.close();
+}
 #endif //ELDERLY_HUFFMAN_FILE_USING_H
