@@ -24,11 +24,17 @@ void encoding(std::string const &input_name, std::string const &output_name) {
         size_t input_sz = 0;
         std::vector<char> buffer(consts::BUFF_SIZE);
         EntryCounter counter;
-        while (!in.eof()) {
+        size_t was_read;
+        do {
             in.read(buffer.data(), buffer.size());
-            counter.update(buffer.begin(), buffer.begin() + in.gcount());
+            was_read = (size_t)(in.gcount());
+            if (was_read == 0 && in.bad()) {
+                std::cout << "reading error in " << input_name << "\n";
+                return;
+            }
+            counter.update(buffer.begin(), buffer.begin() + was_read);
             input_sz += in.gcount();
-        }
+        } while (!in.eof());
         in.clear();
         in.seekg(0);
 
@@ -44,12 +50,17 @@ void encoding(std::string const &input_name, std::string const &output_name) {
         }
         size_t output_sz = serve_source.size();
         out.write(serve_source.data(), serve_source.size());
-        while (!in.eof()) {
+        do {
             in.read(buffer.data(), buffer.size());
-            std::string encoded_block = treeEncoder.encode_block(buffer.begin(), buffer.begin() + in.gcount());
+            was_read = (size_t)(in.gcount());
+            if (was_read == 0 && in.bad()) {
+                std::cout << "reading error in " << input_name << "\n";
+                return;
+            }
+            std::string encoded_block = treeEncoder.encode_block(buffer.begin(), buffer.begin() + was_read);
             out.write(encoded_block.data(), encoded_block.size());
             output_sz += encoded_block.size();
-        }
+        } while (!in.eof());
         std::cout << "successfully_encoded " << input_name << " to " << output_name << ":\n";
         std::cout << "inputsz: " << input_sz << "\n";
         std::cout << "outputsz: " << output_sz << "\n";
@@ -79,13 +90,19 @@ void decoding(std::string const &input_name, std::string const &output_name) {
         size_t output_sz = 0;
         std::vector<char> buffer(consts::BUFF_SIZE);
         TreeDecoder treeDecoder;
-        while (!in.eof()) {
+        size_t was_read;
+        do {
             in.read(buffer.data(), buffer.size());
+            was_read = (size_t)(in.gcount());
+            if (was_read == 0 && in.bad()) {
+                std::cout << "reading error\n";
+                return;
+            }
             std::string decoded_block = treeDecoder.get_code(buffer.begin(), buffer.begin() + in.gcount());
             input_sz += in.gcount();
             out.write(decoded_block.data(), decoded_block.size());
             output_sz += decoded_block.size();
-        }
+        } while (!in.eof());
         std::cout << "successfully_decoded " << input_name << " to " << output_name << ":\n";
         std::cout << "inputsz: " << input_sz << "\n";
         std::cout << "outputsz: " << output_sz << "\n";
@@ -107,20 +124,31 @@ bool same_files(std::string const &input_first, std::string const &input_second)
         return false;
     }
     std::vector<char> first_data(consts::BUFF_SIZE), second_data(consts::BUFF_SIZE);
-    while (!in1.eof() && !in2.eof()) {
+    do {
         in1.read(first_data.data(), consts::BUFF_SIZE);
         in2.read(second_data.data(), consts::BUFF_SIZE);
-        auto was_read_first = in1.gcount();
-        auto was_read_second = in2.gcount();
+        auto was_read_first = (size_t)in1.gcount();
+        auto was_read_second = (size_t)in2.gcount();
+
+        if (was_read_first == 0 && in1.bad()) {
+            std::cout << "reading error in " << input_first << "\n";
+            return false;
+        }
+
+        if (was_read_second == 0 && in2.bad()) {
+            std::cout << "reading error in " << input_second << "\n";
+            return false;
+        }
+
         if (was_read_first != was_read_second) {
             return false;
         }
-        for (size_t i = 0; i < was_read_first; i++) {
+        for (size_t i = 0; i < was_read_first; ++i) {
             if (first_data[i] != second_data[i]) {
                 return false;
             }
         }
-    }
+    } while (!in1.eof() && !in2.eof());
     return in1.eof() && in2.eof();
 }
 
@@ -135,7 +163,7 @@ void make_random(std::string const &file_name, size_t cnt) {
         return;
     }
     std::string s;
-    for (size_t i = 0; i < cnt; i++) {
+    for (size_t i = 0; i < cnt; ++i) {
         s += (char)((rand() % 128 * 2) - 128);
     }
     out.write(s.data(), s.size());
@@ -146,11 +174,9 @@ void file_clear(std::string const &file_name) {
     out.open(file_name, std::ios::out);
     if (!out.is_open()) {
         out.close();
-        std::cout << "unable to open file " << file_name << " to write\n";
+        std::cout << "unable to open file " << file_name << " to clear\n";
         return;
     }
-    std::string s;
-    out.write(s.data(), s.size());
     out.close();
 }
 #endif //ELDERLY_HUFFMAN_FILE_USING_H

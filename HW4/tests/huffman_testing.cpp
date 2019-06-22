@@ -39,6 +39,6 @@ TEST(correctness, normal_random) {
 TEST(correctness, big_random) {
     check_random(5000000);
 }
-TEST(correctness, enormous_random) {
+/*TEST(correctness, enormous_random) {
     check_random(100000000);
-}
+}*/
