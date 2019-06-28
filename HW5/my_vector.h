@@ -250,6 +250,15 @@ struct MyVector {
         clear();
     }
 
+    template <typename It,
+            typename A = std::enable_if<std::is_same<typename std::iterator_traits<It>::value_type, T>::value, It> >
+    MyVector(It it1, It it2) : MyVector() {
+        while (it1 != it2) {
+            push_back(*it1);
+            ++it1;
+        }
+    }
+
     bool empty() const noexcept {
         return ((DATA.index() == 0) && ((show_BO() == nullptr) || (data_size() == 0)));
     }
@@ -263,6 +272,19 @@ struct MyVector {
             }
         } else {
             return 1;
+        }
+    }
+
+    void resize(size_t new_sz, const T &x) {
+        selfdetach();
+        if (size() < new_sz) {
+            while (size() != new_sz) {
+                pop_back();
+            }
+        } else {
+            while (size() != new_sz) {
+                push_back(x);
+            }
         }
     }
 
@@ -547,6 +569,9 @@ struct MyVector {
     }
     // basic
     void swap(MyVector &that) {
+        if (this == &that) {
+            return;
+        }
         bool is_T_this = (DATA.index() == 1);
         bool is_T_that = (that.DATA.index() == 1);
         if (is_T_that && is_T_this) {
