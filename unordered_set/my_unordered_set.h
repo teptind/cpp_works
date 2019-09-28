@@ -83,7 +83,9 @@ struct my_unordered_set {
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    my_unordered_set() : sz(DEFAULT_SZ), cnt(0), table(sz, std::vector<T>()) {}
+    my_unordered_set() : sz(10), cnt(0), table(sz, std::vector<T>()) {}
+
+    explicit my_unordered_set(size_t sz) : sz(sz), cnt(0), table(sz, std::vector<T>()) {}
 
     ~my_unordered_set() = default;
 
@@ -93,7 +95,7 @@ struct my_unordered_set {
 
     void clear() {
         table.clear();
-        table.resize(DEFAULT_SZ);
+        table.resize(sz);
         cnt = 0;
     }
 
@@ -147,7 +149,6 @@ struct my_unordered_set {
 
 private:
     size_t sz, cnt;
-    const size_t DEFAULT_SZ = 10;
     std::vector<std::vector<T> > table;
 
     void expand_if_nessesary() {
