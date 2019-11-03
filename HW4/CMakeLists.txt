@@ -1,21 +1,25 @@
-cmake_minimum_required(VERSION 3.13)
-project(Elderly_Huffman)
+cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_STANDARD 14)
+project(BIGINT)
 
-add_library(huffman_lib STATIC
-        HuffmanCompression/tree/entry_counter.hpp
-        HuffmanCompression/consts.h
-        HuffmanCompression/bitset/bitset.hpp
-        HuffmanCompression/bitset/bitset.cpp
-        HuffmanCompression/tree/node.h
-        HuffmanCompression/tree/trees.h
-        HuffmanCompression/tree/trees.cpp)
+include_directories(${BIGINT_SOURCE_DIR})
 
-add_executable(huffman_tests tests/gtest/gtest.h tests/gtest/gtest-all.cc tests/gtest/gtest_main.cc tests/huffman_testing.cpp)
-target_link_libraries(huffman_tests huffman_lib)
+set(CMAKE_CXX_STANDARD 17)
 
-add_executable(util utility/utility.cpp utility/file_using.h)
-target_link_libraries(util huffman_lib)
+add_executable(vector_testing
+               vector_testing.cpp
+               counted.h
+               counted.cpp
+               fault_injection.h
+               fault_injection.cpp
+               gtest/gtest-all.cc
+               gtest/gtest.h
+               gtest/gtest_main.cc
+        my_vector.h)
 
-target_link_libraries(huffman_tests pthread huffman_lib)
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pedantic")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address,undefined -D_GLIBCXX_DEBUG")
+endif()
+
+target_link_libraries(vector_testing -lpthread)
